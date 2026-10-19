@@ -4,14 +4,7 @@
 
 import argparse
 
-import cv2
-from models import get_model
-import numpy as np
-import torch
-from torchvision import transforms
-
-from uniface import face_alignment
-from uniface.detection import SCRFD
+from pipeline_cli import add_pipeline_arguments, pipeline_from_args
 
 
 def parse_args() -> argparse.Namespace:
@@ -20,86 +13,39 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument('images', type=str, nargs='+', help='One or more image paths')
-    parser.add_argument(
-        '--variant',
-        type=str,
-        default='t',
-        choices=['t', 's', 'm', 'l'],
-        help='Model variant (tiny/small/medium/large)',
-    )
-    parser.add_argument(
-        '--weights',
-        type=str,
-        default=None,
-        help='Path to PyTorch state dict (.pth/.bin). Defaults to weights/ediffiqa_<variant>.pth',
-    )
-    parser.add_argument(
-        '--aligned',
-        action='store_true',
-        help='Skip detection; treat inputs as already-aligned 112x112 face crops.',
-    )
-    parser.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu')
+    add_pipeline_arguments(parser)
     return parser.parse_args()
 
 
-def build_transform() -> transforms.Compose:
-    """Matches the upstream eDifFIQA inference transform."""
-    return transforms.Compose(
-        [
-            transforms.ToPILImage(),
-            transforms.Resize((112, 112)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-        ]
-    )
-
-
-@torch.no_grad()
 def main() -> None:
     args = parse_args()
-
-    if args.variant == 't' and args.weights is None:
-        raise SystemExit(
-            'eDifFIQA-T PyTorch weights are not redistributed by the upstream authors '
-            '(only an ONNX is published). Either pass --weights with a locally obtained '
-            'ediffiqaT.pth, or use onnx_inference.py with weights/ediffiqa_t.onnx.'
-        )
-
-    weights_path = args.weights or f'weights/ediffiqa_{args.variant}.pth'
-    print(f'Loading eDifFIQA-{args.variant.upper()} from {weights_path} on {args.device}')
-
-    model = get_model(args.variant, return_feat=False)
-    state_dict = torch.load(weights_path, map_location=args.device, weights_only=True)
-    model.load_state_dict(state_dict)
-    model.to(args.device).eval()
-
-    transform = build_transform()
-    detector = None if args.aligned else SCRFD()
-
-    print(f'{"image":<40} {"face":>5} {"score":>10}')
-    print('-' * 60)
+    pipeline = pipeline_from_args(args)
+    fallback = pipeline.fallback_detector_name or 'none'
+    print(f'Loading eDifFIQA-{args.variant.upper()} on {args.device}; detector={pipeline.detector_name} fallback={fallback}')
+    print(f'{"image":<40} {"detector":<22} {"status":<16} {"score":>10} {"decision":<15}')
+    print('-' * 110)
 
     for image_path in args.images:
-        image = cv2.imread(image_path)
-        if image is None:
-            print(f'{image_path:<40} {"-":>5} {"READ_ERR":>10}')
-            continue
-
-        if args.aligned:
-            crops = [image]
-        else:
-            faces = detector.detect(image)
-            if len(faces) == 0:
-                print(f'{image_path:<40} {0:>5} {"NO_FACE":>10}')
-                continue
-            crops = [face_alignment(image, f.landmarks.astype(np.float32))[0] for f in faces]
-
-        for idx, crop in enumerate(crops, start=1):
-            # eDifFIQA expects RGB; ToPILImage assumes the array layout, so swap channels first.
-            rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
-            tensor = transform(rgb).unsqueeze(0).to(args.device)
-            score = model(tensor).squeeze().detach().cpu().item()
-            print(f'{image_path:<40} {idx:>5} {score:>10.4f}')
+        for result in pipeline.evaluate(image_path, aligned=args.aligned):
+            score = '-' if result.quality_score is None else f'{result.quality_score:.4f}'
+            print(
+                f'{result.image:<40} {result.detector:<22} {result.status:<16} '
+                f'{score:>10} {result.decision:<15}'
+            )
+            if result.error_reason:
+                print(f'  reason: {result.error_reason}')
+            if result.decision_reason and result.status == 'OK':
+                print(f'  decision reason: {result.decision_reason}')
+            if result.image_width is not None:
+                print(f'  dimensions: {result.image_width}x{result.image_height}')
+            if result.face_index is not None and not args.aligned:
+                confidence = '-' if result.confidence is None else f'{result.confidence:.6f}'
+                print(f'  face={result.face_index} confidence={confidence} bbox={result.bbox} face_area_ratio={result.face_area_ratio:.2f}')
+            if result.pose_status == 'OK':
+                print(f'  head pose (deg): pitch={result.pitch:.1f} yaw={result.yaw:.1f} roll={result.roll:.1f}')
+            elif result.pose_status == 'ERROR':
+                print('  head pose: ERROR (quality score unaffected)')
+            print(f'  time: {result.processing_time_ms:.0f} ms')
 
 
 if __name__ == '__main__':

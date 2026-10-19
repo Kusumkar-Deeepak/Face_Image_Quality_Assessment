@@ -1,0 +1,99 @@
+{
+  "images_total": 9,
+  "images_unreadable": 0,
+  "status_counts_per_face_row": {
+    "OK": 9
+  },
+  "decision_counts_per_face_row": {
+    "NOT_EVALUATED": 9
+  },
+  "detector_counts": {
+    "scrfd": 9
+  },
+  "detection": {
+    "images_decoded": 9,
+    "images_with_usable_face": 9,
+    "detection_success_rate": 1.0,
+    "images_using_fallback": 0,
+    "fallback_rate": 0.0,
+    "images_no_face": 0
+  },
+  "timing_ms": {
+    "mean": 393.78628888895645,
+    "median": 351.34960000004867,
+    "p95": 630.7717600000614,
+    "note": "includes the first call, which can include model warm-up"
+  },
+  "score_distribution_by_category": {
+    "blur": {
+      "n": 2,
+      "mean": 0.3700190484523773,
+      "std": 0.07369878888130188,
+      "min": 0.29632025957107544,
+      "p25": 0.3331696540117264,
+      "median": 0.3700190484523773,
+      "p75": 0.40686844289302826,
+      "max": 0.4437178373336792
+    },
+    "lowres": {
+      "n": 2,
+      "mean": 0.5934973955154419,
+      "std": 0.023849844932556152,
+      "min": 0.5696475505828857,
+      "p25": 0.5815724730491638,
+      "median": 0.5934973955154419,
+      "p75": 0.60542231798172,
+      "max": 0.617347240447998
+    },
+    "original": {
+      "n": 5,
+      "mean": 0.7236207485198974,
+      "std": 0.07595557317279189,
+      "min": 0.6506532430648804,
+      "p25": 0.6724836826324463,
+      "median": 0.677990198135376,
+      "p75": 0.7614785432815552,
+      "max": 0.8554980754852295
+    }
+  },
+  "paired_comparisons": [
+    {
+      "source": "image2",
+      "variant": "blur:file",
+      "original_score": 0.8554980754852295,
+      "variant_score": 0.29632025957107544,
+      "delta": -0.559177815914154,
+      "variant_lower": true
+    },
+    {
+      "source": "image2",
+      "variant": "lowres:file",
+      "original_score": 0.8554980754852295,
+      "variant_score": 0.5696475505828857,
+      "delta": -0.28585052490234375,
+      "variant_lower": true
+    },
+    {
+      "source": "image3",
+      "variant": "blur:file",
+      "original_score": 0.7614785432815552,
+      "variant_score": 0.4437178373336792,
+      "delta": -0.317760705947876,
+      "variant_lower": true
+    },
+    {
+      "source": "image3",
+      "variant": "lowres:file",
+      "original_score": 0.7614785432815552,
+      "variant_score": 0.617347240447998,
+      "delta": -0.14413130283355713,
+      "variant_lower": true
+    }
+  ],
+  "paired_summary": {
+    "n_pairs": 4,
+    "variant_lower": 4,
+    "exceptions": [],
+    "note": "A variant is not guaranteed to score lower; exceptions are listed, not hidden. Faces are re-detected per variant, so boxes can differ."
+  }
+}

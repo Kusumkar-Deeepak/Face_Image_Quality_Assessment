@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  face-quality-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: face-quality-assessment:latest
+    container_name: face_quality_app
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount configuration files for live updates without rebuild
+      - ./quality_thresholds.json:/app/quality_thresholds.json
+      - ./detector_config.json:/app/detector_config.json
+    restart: unless-stopped

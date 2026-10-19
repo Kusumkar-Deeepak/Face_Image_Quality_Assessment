@@ -1,0 +1,19 @@
+{
+  "primary": "scrfd",
+  "fallback": null,
+  "mode": "fallback",
+  "scrfd": {
+    "confidence_threshold": 0.5,
+    "nms_threshold": 0.4,
+    "input_size": [640, 640],
+    "model_name": null
+  },
+  "retinaface": {
+    "confidence_threshold": 0.5,
+    "nms_threshold": 0.4,
+    "input_size": [640, 640],
+    "model_name": null
+  },
+  "dedupe_iou": 0.5,
+  "providers": null
+}

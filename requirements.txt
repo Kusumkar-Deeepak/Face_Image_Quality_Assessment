@@ -1,5 +1,19 @@
-uniface>=3.3.0
-torch
-torchvision
-onnx
-onnxruntime
+# Core Computer Vision & FIQA Inference
+torch>=2.0.0
+torchvision>=0.15.0
+uniface>=4.0.0,<5
+onnxruntime>=1.15.0
+onnx>=1.14.0
+opencv-python-headless>=4.8.0
+pillow>=10.0.0
+numpy>=1.24.0
+
+# FastAPI Production Backend
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+python-multipart>=0.0.9
+pydantic>=2.0.0
+httpx>=0.27.0
+
+# Testing & Verification
+pytest>=8.0.0

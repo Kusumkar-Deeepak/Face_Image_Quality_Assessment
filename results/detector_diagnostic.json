@@ -1,0 +1,719 @@
+[
+  {
+    "image": "assets/test_images/image0.jpg",
+    "shape": [
+      537,
+      537,
+      3
+    ],
+    "status": "OK",
+    "error_reason": null,
+    "runs": [
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 0,
+        "top": [],
+        "label": "scrfd production",
+        "kind": "production",
+        "status": "NO_FACE"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 677,
+        "top": [
+          {
+            "confidence": 0.20485568046569824,
+            "bbox": [
+              117.2,
+              79.2,
+              432.8,
+              452.6
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.409,
+            "face_longest_side_px": 373.4,
+            "face_longest_side_at_detector_input_px": 445.0
+          }
+        ],
+        "label": "scrfd floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.999997615814209,
+            "bbox": [
+              88.9,
+              54.5,
+              442.1,
+              444.1
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.477,
+            "face_longest_side_px": 389.6,
+            "face_longest_side_at_detector_input_px": 464.3
+          }
+        ],
+        "label": "retinaface production",
+        "kind": "production",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.999997615814209,
+            "bbox": [
+              88.9,
+              54.5,
+              442.1,
+              444.1
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.477,
+            "face_longest_side_px": 389.6,
+            "face_longest_side_at_detector_input_px": 464.3
+          }
+        ],
+        "label": "retinaface floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          320,
+          320
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.8604965806007385,
+            "bbox": [
+              84.7,
+              59.6,
+              451.7,
+              462.4
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.513,
+            "face_longest_side_px": 402.8,
+            "face_longest_side_at_detector_input_px": 240.1
+          }
+        ],
+        "label": "scrfd input=320",
+        "kind": "production-threshold",
+        "status": "OK"
+      }
+    ]
+  },
+  {
+    "image": "assets/test_images/image1.jpg",
+    "shape": [
+      208,
+      208,
+      3
+    ],
+    "status": "OK",
+    "error_reason": null,
+    "runs": [
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 0,
+        "top": [],
+        "label": "scrfd production",
+        "kind": "production",
+        "status": "NO_FACE"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 586,
+        "top": [
+          {
+            "confidence": 0.2324267029762268,
+            "bbox": [
+              40.4,
+              19.7,
+              153.7,
+              176.2
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.41,
+            "face_longest_side_px": 156.5,
+            "face_longest_side_at_detector_input_px": 481.4
+          }
+        ],
+        "label": "scrfd floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.9999995231628418,
+            "bbox": [
+              42.3,
+              15.3,
+              174.6,
+              182.8
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.512,
+            "face_longest_side_px": 167.5,
+            "face_longest_side_at_detector_input_px": 515.5
+          }
+        ],
+        "label": "retinaface production",
+        "kind": "production",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 5,
+        "top": [
+          {
+            "confidence": 0.9999995231628418,
+            "bbox": [
+              42.3,
+              15.3,
+              174.6,
+              182.8
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.512,
+            "face_longest_side_px": 167.5,
+            "face_longest_side_at_detector_input_px": 515.5
+          }
+        ],
+        "label": "retinaface floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          320,
+          320
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.8609012365341187,
+            "bbox": [
+              38.5,
+              19.6,
+              163.0,
+              181.0
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.464,
+            "face_longest_side_px": 161.3,
+            "face_longest_side_at_detector_input_px": 248.2
+          }
+        ],
+        "label": "scrfd input=320",
+        "kind": "production-threshold",
+        "status": "OK"
+      }
+    ]
+  },
+  {
+    "image": "assets/test_images/image2.jpg",
+    "shape": [
+      221,
+      221,
+      3
+    ],
+    "status": "OK",
+    "error_reason": null,
+    "runs": [
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 0,
+        "top": [],
+        "label": "scrfd production",
+        "kind": "production",
+        "status": "NO_FACE"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 659,
+        "top": [
+          {
+            "confidence": 0.3418702483177185,
+            "bbox": [
+              46.5,
+              32.2,
+              170.1,
+              190.8
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.401,
+            "face_longest_side_px": 158.6,
+            "face_longest_side_at_detector_input_px": 459.3
+          }
+        ],
+        "label": "scrfd floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.9999986886978149,
+            "bbox": [
+              47.9,
+              25.3,
+              181.2,
+              191.4
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.453,
+            "face_longest_side_px": 166.1,
+            "face_longest_side_at_detector_input_px": 480.9
+          }
+        ],
+        "label": "retinaface production",
+        "kind": "production",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.9999986886978149,
+            "bbox": [
+              47.9,
+              25.3,
+              181.2,
+              191.4
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.453,
+            "face_longest_side_px": 166.1,
+            "face_longest_side_at_detector_input_px": 480.9
+          }
+        ],
+        "label": "retinaface floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          320,
+          320
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.8650926351547241,
+            "bbox": [
+              49.3,
+              25.6,
+              173.0,
+              192.7
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.424,
+            "face_longest_side_px": 167.2,
+            "face_longest_side_at_detector_input_px": 242.1
+          }
+        ],
+        "label": "scrfd input=320",
+        "kind": "production-threshold",
+        "status": "OK"
+      }
+    ]
+  },
+  {
+    "image": "assets/test_images/image3.jpg",
+    "shape": [
+      259,
+      260,
+      3
+    ],
+    "status": "OK",
+    "error_reason": null,
+    "runs": [
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 0,
+        "top": [],
+        "label": "scrfd production",
+        "kind": "production",
+        "status": "NO_FACE"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 818,
+        "top": [
+          {
+            "confidence": 0.2044137418270111,
+            "bbox": [
+              177.5,
+              5.7,
+              191.6,
+              22.1
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.003,
+            "face_longest_side_px": 16.3,
+            "face_longest_side_at_detector_input_px": 40.2
+          }
+        ],
+        "label": "scrfd floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.9999983310699463,
+            "bbox": [
+              40.4,
+              21.1,
+              204.7,
+              224.7
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.497,
+            "face_longest_side_px": 203.6,
+            "face_longest_side_at_detector_input_px": 501.1
+          }
+        ],
+        "label": "retinaface production",
+        "kind": "production",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 4,
+        "top": [
+          {
+            "confidence": 0.9999983310699463,
+            "bbox": [
+              40.4,
+              21.1,
+              204.7,
+              224.7
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.497,
+            "face_longest_side_px": 203.6,
+            "face_longest_side_at_detector_input_px": 501.1
+          }
+        ],
+        "label": "retinaface floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          320,
+          320
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.8585180044174194,
+            "bbox": [
+              36.7,
+              17.3,
+              211.4,
+              226.6
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.543,
+            "face_longest_side_px": 209.3,
+            "face_longest_side_at_detector_input_px": 257.6
+          }
+        ],
+        "label": "scrfd input=320",
+        "kind": "production-threshold",
+        "status": "OK"
+      }
+    ]
+  },
+  {
+    "image": "assets/test_images/image5.jpg",
+    "shape": [
+      275,
+      183,
+      3
+    ],
+    "status": "OK",
+    "error_reason": null,
+    "runs": [
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.8570331335067749,
+            "bbox": [
+              37.1,
+              60.9,
+              120.2,
+              177.1
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.192,
+            "face_longest_side_px": 116.2,
+            "face_longest_side_at_detector_input_px": 270.5
+          }
+        ],
+        "label": "scrfd production",
+        "kind": "production",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 656,
+        "top": [
+          {
+            "confidence": 0.8570331335067749,
+            "bbox": [
+              37.1,
+              60.9,
+              120.2,
+              177.1
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.192,
+            "face_longest_side_px": 116.2,
+            "face_longest_side_at_detector_input_px": 270.5
+          }
+        ],
+        "label": "scrfd floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.9999769926071167,
+            "bbox": [
+              36.0,
+              62.8,
+              120.6,
+              177.7
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.193,
+            "face_longest_side_px": 114.9,
+            "face_longest_side_at_detector_input_px": 267.3
+          }
+        ],
+        "label": "retinaface production",
+        "kind": "production",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.01,
+        "input_size": [
+          640,
+          640
+        ],
+        "n_detections": 2,
+        "top": [
+          {
+            "confidence": 0.9999769926071167,
+            "bbox": [
+              36.0,
+              62.8,
+              120.6,
+              177.7
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.193,
+            "face_longest_side_px": 114.9,
+            "face_longest_side_at_detector_input_px": 267.3
+          }
+        ],
+        "label": "retinaface floor=0.01",
+        "kind": "diagnostic-only",
+        "status": "OK"
+      },
+      {
+        "confidence_threshold": 0.5,
+        "input_size": [
+          320,
+          320
+        ],
+        "n_detections": 1,
+        "top": [
+          {
+            "confidence": 0.8107821941375732,
+            "bbox": [
+              35.7,
+              59.7,
+              118.1,
+              176.9
+            ],
+            "valid": true,
+            "invalid_reason": null,
+            "alignment_status": "OK",
+            "alignment_error": null,
+            "face_area_ratio": 0.192,
+            "face_longest_side_px": 117.2,
+            "face_longest_side_at_detector_input_px": 136.4
+          }
+        ],
+        "label": "scrfd input=320",
+        "kind": "production-threshold",
+        "status": "OK"
+      }
+    ]
+  }
+]

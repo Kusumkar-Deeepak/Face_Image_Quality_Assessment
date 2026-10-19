@@ -21,4 +21,6 @@ pytest>=8.0.0
 # Hugging Face Spaces & Data
 gradio>=5.0.0
 pandas>=2.0.0
+spaces
+
 

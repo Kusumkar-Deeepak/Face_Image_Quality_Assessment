@@ -17,6 +17,16 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
+try:
+    import spaces
+except ImportError:
+    class spaces:
+        @staticmethod
+        def GPU(fn=None, duration=60):
+            if fn is None:
+                return lambda f: f
+            return fn
+
 # Ensure project root in sys.path
 ROOT_DIR = Path(__file__).resolve().parent
 if str(ROOT_DIR) not in sys.path:
@@ -87,6 +97,7 @@ def annotate_faces_on_image(image_rgb: np.ndarray, faces: list[Any]) -> np.ndarr
 # ---------------------------------------------------------------------------
 # Single Image Analysis Callback
 # ---------------------------------------------------------------------------
+@spaces.GPU
 def analyze_single_face(
     input_image: np.ndarray | None,
     detector: str,
@@ -255,6 +266,7 @@ def analyze_single_face(
 # ---------------------------------------------------------------------------
 # Batch Analysis Callback
 # ---------------------------------------------------------------------------
+@spaces.GPU(duration=120)
 def analyze_batch_faces(
     files: list[Any] | None,
     detector: str,

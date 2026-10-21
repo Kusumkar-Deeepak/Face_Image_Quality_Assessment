@@ -209,9 +209,13 @@ class DetectionOutcome:
 class FaceDetectorChain:
     """Run the primary detector; run the fallback only if the primary yields no usable face."""
 
-    def __init__(self, config: DetectorConfig | None = None) -> None:
+    def __init__(
+        self,
+        config: DetectorConfig | None = None,
+        detectors: dict[str, Any] | None = None,
+    ) -> None:
         self.config = config or DetectorConfig()
-        self.detectors: dict[str, Any] = {}  # built lazily, then reused
+        self.detectors: dict[str, Any] = detectors if detectors is not None else {}  # built lazily, then reused
 
     def _get(self, name: str) -> Any:
         if name not in self.detectors:

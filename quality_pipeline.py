@@ -195,31 +195,38 @@ class QualityPipeline:
         pose_estimator: Any | None = None,
         gaze: bool = False,
         gaze_estimator: Any | None = None,
+        model: Any | None = None,
+        detectors: dict[str, Any] | None = None,
     ) -> None:
         config = (detector_config or DetectorConfig()).with_overrides(primary=detector, fallback=fallback_detector)
-        self.detection = FaceDetectorChain(config)
+        self.detection = FaceDetectorChain(config, detectors=detectors)
         self.device = device
         self.detector_name = config.primary
         self.fallback_detector_name = config.fallback
         self.thresholds = thresholds or QualityThresholds()
         if self.thresholds.has_pose_limits and not (head_pose or pose_estimator is not None):
             raise ValueError('pose limits are configured but head-pose estimation is disabled; enable head_pose')
-        weights_path = Path(weights or f'weights/ediffiqa_{variant}.pth')
-        if not weights_path.exists():
-            try:
-                weights_path.parent.mkdir(parents=True, exist_ok=True)
-                url = f'https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_{variant}.pth'
-                torch.hub.download_url_to_file(url, str(weights_path))
-            except Exception:
-                pass
 
-        try:
-            self.model = get_model(variant, return_feat=False)
-            state_dict = torch.load(weights_path, map_location=device, weights_only=True)
-            self.model.load_state_dict(state_dict)
-            self.model.to(device).eval()
-        except Exception as error:
-            raise RuntimeError(f'Failed to load eDifFIQA-{variant.upper()} from {weights_path}: {error}') from error
+        if model is not None:
+            self.model = model
+        else:
+            weights_path = Path(weights or f'weights/ediffiqa_{variant}.pth')
+            if not weights_path.exists():
+                try:
+                    weights_path.parent.mkdir(parents=True, exist_ok=True)
+                    url = f'https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_{variant}.pth'
+                    torch.hub.download_url_to_file(url, str(weights_path))
+                except Exception:
+                    pass
+
+            try:
+                self.model = get_model(variant, return_feat=False)
+                state_dict = torch.load(weights_path, map_location=device, weights_only=True)
+                self.model.load_state_dict(state_dict)
+                del state_dict
+                self.model.to(device).eval()
+            except Exception as error:
+                raise RuntimeError(f'Failed to load eDifFIQA-{variant.upper()} from {weights_path}: {error}') from error
 
         # Official eDifFIQA preprocessing (matches upstream main.py): RGB, 112x112, (x/255 - 0.5) / 0.5.
         self.transform = transforms.Compose(

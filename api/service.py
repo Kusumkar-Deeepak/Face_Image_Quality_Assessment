@@ -56,6 +56,16 @@ logger = logging.getLogger("face_quality_lab")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 
 
+def release_process_memory() -> None:
+    """Trigger Python garbage collection and prompt Linux glibc to release free memory to OS."""
+    gc.collect()
+    try:
+        import ctypes
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    except Exception:
+        pass
+
+
 class PipelineService:
     """Manages the eDifFIQA inference pipeline lifecycle, model reuse, session stats,
 
@@ -81,6 +91,7 @@ class PipelineService:
         self._shared_model: Any | None = None
         self._shared_pose_checker: Any | None = None
         self._shared_gaze_checker: Any | None = None
+        self._shared_detectors: dict[str, Any] = {}
         self._pipeline_cache: dict[tuple, QualityPipeline] = {}
         self._batches: OrderedDict[str, BatchAnalysisResult] = OrderedDict()
         self._max_batches = 100
@@ -104,6 +115,7 @@ class PipelineService:
                 head_pose=False,
             )
             logger.info("Default QualityPipeline initialized successfully.")
+            release_process_memory()
         except Exception as exc:
             logger.error(f"Error during pre-warming pipeline: {exc}", exc_info=True)
 
@@ -278,14 +290,13 @@ class PipelineService:
                 pose_estimator=self._shared_pose_checker,
                 gaze=gaze,
                 gaze_estimator=self._shared_gaze_checker,
+                model=self._shared_model,
+                detectors=self._shared_detectors,
             )
 
-            # Store reference to shared models
+            # Store reference to shared models & detectors
             if self._shared_model is None:
                 self._shared_model = pipeline.model
-            else:
-                # Reuse existing model to avoid extra memory / loading overhead
-                pipeline.model = self._shared_model
 
             if head_pose and pipeline.pose_checker is not None:
                 if self._shared_pose_checker is None:
@@ -492,7 +503,7 @@ class PipelineService:
             del eval_results
         except Exception:
             pass
-        gc.collect()
+        release_process_memory()
         return analysis_results
 
     def _update_session_stats(self, results: list[FaceAnalysisResult]) -> None:

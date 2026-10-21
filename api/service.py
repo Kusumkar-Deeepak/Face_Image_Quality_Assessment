@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import csv
 import io
+import gc
 import json
 import logging
 import os
@@ -23,6 +24,13 @@ import cv2
 import numpy as np
 import torch
 from PIL import Image as PilImage, ImageOps as PilImageOps
+
+# Restrict thread pools to avoid memory blow-up on shared CPU cloud containers (Render 512MB)
+if hasattr(torch, "set_num_threads"):
+    try:
+        torch.set_num_threads(min(2, os.cpu_count() or 1))
+    except Exception:
+        pass
 
 # Safety limits: Decompression bomb and extreme dimension protection
 PilImage.MAX_IMAGE_PIXELS = 100_000_000
@@ -356,19 +364,29 @@ class PipelineService:
                     )
                 else:
                     transposed = PilImageOps.exif_transpose(pil_img)
+                    # Safe downscale for memory conservation (caps uncompressed RAM spikes on 512MB containers)
+                    MAX_PROCESS_DIM = 1920
+                    if transposed.width > MAX_PROCESS_DIM or transposed.height > MAX_PROCESS_DIM:
+                        transposed.thumbnail((MAX_PROCESS_DIM, MAX_PROCESS_DIM), PilImage.Resampling.LANCZOS)
                     rgb = np.array(transposed.convert("RGB"))
                     image = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+                    del rgb
         except PilImage.DecompressionBombError as bomb_err:
             decode_error = f"Decompression bomb detected: {str(bomb_err)}"
         except Exception:
             try:
                 arr = np.frombuffer(image_bytes, np.uint8)
                 image = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+                del arr
                 if image is not None:
                     ih, iw = image.shape[:2]
                     if ih > MAX_IMAGE_DIMENSION or iw > MAX_IMAGE_DIMENSION or (ih * iw > 100_000_000):
                         decode_error = f"Image dimensions ({iw}x{ih}) exceed safe limit"
                         image = None
+                    elif ih > 1920 or iw > 1920:
+                        scale = 1920.0 / max(ih, iw)
+                        new_w, new_h = int(iw * scale), int(ih * scale)
+                        image = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_AREA)
             except Exception as exc:
                 decode_error = str(exc)
 
@@ -469,6 +487,12 @@ class PipelineService:
             analysis_results.append(analysis)
 
         self._update_session_stats(analysis_results)
+        try:
+            del image
+            del eval_results
+        except Exception:
+            pass
+        gc.collect()
         return analysis_results
 
     def _update_session_stats(self, results: list[FaceAnalysisResult]) -> None:

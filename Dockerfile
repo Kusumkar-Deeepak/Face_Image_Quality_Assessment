@@ -30,7 +30,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN useradd -m -u 1000 user
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    OMP_NUM_THREADS=2 \
+    MKL_NUM_THREADS=2 \
+    OPENBLAS_NUM_THREADS=2 \
+    VECLIB_MAXIMUM_THREADS=2 \
+    NUMEXPR_NUM_THREADS=2
 
 WORKDIR /app
 

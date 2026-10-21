@@ -35,7 +35,7 @@ import BoundingBoxViewer from './BoundingBoxViewer';
 import ImageViewerModal from './ImageViewerModal';
 
 const MAX_BATCH_LIMIT = 100;
-const CHUNK_SIZE = 5; // Process 5 images per request for responsive live streaming progress
+const CHUNK_SIZE = 2; // Process 2 images per request to prevent RAM spikes (512MB limit) and avoid proxy 502 timeouts
 
 export default function BatchEvaluation({ onBatchComplete }) {
   const [files, setFiles] = useState([]);
@@ -350,21 +350,48 @@ export default function BatchEvaluation({ onBatchComplete }) {
         setActiveStage('detecting');
         setCurrentStepText(`Detecting faces with ${detector.toUpperCase()} & evaluating eDifFIQA-S quality...`);
 
-        const response = await analyzeBatchImages({
-          files: chunk,
-          detector,
-          fallbackDetector: fallbackDetector || null,
-          detectionMode,
-          confidenceThreshold: Number(confidenceThreshold),
-          scrfdInputSize,
-          headPose,
-          gaze,
-          reviewPolicy,
-        });
+        let chunkResults = [];
+        try {
+          const response = await analyzeBatchImages({
+            files: chunk,
+            detector,
+            fallbackDetector: fallbackDetector || null,
+            detectionMode,
+            confidenceThreshold: Number(confidenceThreshold),
+            scrfdInputSize,
+            headPose,
+            gaze,
+            reviewPolicy,
+          });
+          chunkResults = response?.results || [];
+        } catch (chunkErr) {
+          console.warn(`Chunk ${chunkIdx + 1} encountered an error:`, chunkErr);
+          // Gracefully fallback to per-image error records so the batch can proceed without stopping
+          chunkResults = chunk.map((file, i) => ({
+            request_id: `err-${Date.now()}-${i}`,
+            image_name: file.name,
+            image_width: null,
+            image_height: null,
+            detector: detector,
+            detection_mode: detectionMode,
+            fallback_used: false,
+            face_index: null,
+            confidence: null,
+            bbox: null,
+            quality_score: null,
+            status: 'READ_ERROR',
+            decision: 'NOT_EVALUATED',
+            gate_decision: 'ERROR',
+            effective_decision: 'ERROR',
+            decision_reason: `Batch chunk error: ${chunkErr.message || 'Server timeout or memory limit'}.`,
+            error_reason: chunkErr.message || 'Chunk network or gateway timeout',
+            detection_note: 'Request timed out or encountered cloud container memory limit',
+            processing_time_ms: 0,
+          }));
+        }
 
         // Stage: Processing finished for this chunk
         setActiveStage('scoring');
-        const chunkResults = response.results || [];
         const chunkResultsWithUrls = chunkResults.map((r, i) => {
           const matchedFile = chunk.find(f => f.name === r.image_name) || chunk[i];
           const fileUrl = matchedFile ? getFullImageUrl(matchedFile) : null;

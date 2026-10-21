@@ -93,6 +93,7 @@ async def add_request_id_and_logging(request: Request, call_next):
 
 
 @app.get("/api/health", response_model=HealthResponse)
+@app.get("/health", response_model=HealthResponse)
 def health_check() -> HealthResponse:
     """Return pipeline model availability and hardware acceleration status."""
     return pipeline_service.get_health()

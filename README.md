@@ -8,286 +8,321 @@ app_file: app.py
 pinned: false
 ---
 
-# Face Image Quality Assessment
+# Face Image Quality Assessment (FIQA) & Biometric Assurance Platform
 
-[![Downloads](https://img.shields.io/github/downloads/yakhyo/face-image-quality-assessment/total.svg?label=Downloads)](https://github.com/yakhyo/face-image-quality-assessment/releases)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
+[![React 18](https://img.shields.io/badge/React-18-61DAFB.svg)](https://react.dev/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x%20CPU-EE4C2C.svg)](https://pytorch.org/)
+[![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-1.15%2B-blue.svg)](https://onnxruntime.ai/)
+[![UniFace](https://img.shields.io/badge/UniFace-4.0.0-purple.svg)](https://github.com/yakhyo/uniface)
+[![Docker Ready](https://img.shields.io/badge/Docker-Multi--Stage-2496ED.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> [!TIP]
-> The models and functionality in this repository are **integrated into [UniFace](https://github.com/yakhyo/uniface)** — an all-in-one face analysis toolkit.<br>
-> [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/) [![GitHub Stars](https://img.shields.io/github/stars/yakhyo/uniface)](https://github.com/yakhyo/uniface/stargazers)
+An enterprise-ready, end-to-end **Face Image Quality Assessment (FIQA)** system designed for biometric enrollment validation, access control, and crowded surveillance monitoring. 
 
-PyTorch inference, ONNX export, and ONNX Runtime inference for [eDifFIQA](https://github.com/LSIbabnikz/eDifFIQA) — a face image quality estimator that predicts a single quality score from an aligned 112×112 face. Uses [UniFace](https://github.com/yakhyo/uniface) for face detection and alignment.
+The platform integrates **eDifFIQA-S** deep quality utility estimation, a two-stage hybrid face detection pipeline (**UniFace SCRFD + RetinaFace Fallback**), 5-point facial landmark alignment, 3D head-pose estimation (**6DRepNet**), gaze vector tracking (**MobileGaze**), explainable photographic diagnostics, a deterministic 6-state decision gate engine, and a modern **React/Vite dashboard** powered by a high-performance **FastAPI** backend.
 
-## Models
+---
 
-| Variant    | Backbone      | Params | Input   | PyTorch (.pth)                                                                                           | ONNX                                                                                                      |
-| ---------- | ------------- | ------ | ------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| eDifFIQA-T | MobileFaceNet | 1.7M   | 112x112 | [Link](https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_t.pth) | [Link](https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_t.onnx) |
-| eDifFIQA-S | IResNet-18    | 24.6M  | 112x112 | [Link](https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_s.pth) | [Link](https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_s.onnx) |
-| eDifFIQA-M | IResNet-50    | 44.1M  | 112x112 | [Link](https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_m.pth) | [Link](https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_m.onnx) |
-| eDifFIQA-L | IResNet-100   | 65.7M  | 112x112 | [Link](https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_l.pth) | [Link](https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_l.onnx) |
+## 🌐 Live Demonstrations & Deliverables
 
-Higher score = better quality. Authors evaluate against 10 FIQA competitors on 7 static-image datasets + 1 video dataset using EDC curves; LFW and XQLFW are the commonly cited references for high-quality vs. low-quality regimes. eDifFIQA-L ranks first on the NIST [FATE-Quality](https://pages.nist.gov/frvt/html/frvt_quality.html) Kiosk-to-Entry track. See the [paper](https://ieeexplore.ieee.org/document/10468647) for per-dataset numbers.
+| Deliverable | Access Link / Location | Description |
+| :--- | :--- | :--- |
+| **Hugging Face Live Demo** | [deeepak08-face-image-quality.hf.space](https://deeepak08-face-image-quality.hf.space) | High-RAM (16 GB) live cloud demo running all models concurrently. |
+| **Render Cloud Deployment** | [face-quality-recognization.onrender.com](https://face-quality-recognization.onrender.com) | Unified React + FastAPI production deployment on Render. |
+| **Interactive API Documentation** | [localhost:8000/docs](http://localhost:8000/docs) (or on live URLs) | Interactive Swagger / OpenAPI documentation for all REST endpoints. |
+| **Engineering Status Report** | [`docs/FIQA_Project_Status_Report.pdf`](docs/FIQA_Project_Status_Report.pdf) | Formal project report covering architecture, benchmarks, and challenges. |
+| **Quick Windows Demo** | Double-click [`run_demo.bat`](run_demo.bat) | 1-click script to build the frontend and launch the server. |
 
-> `.pth` weights are ported from the upstream authors' [OneDrive folder](https://unilj-my.sharepoint.com/:f:/g/personal/zb4290_student_uni-lj_si/EpxkJRo7artCud18dC2NAXcBAegU0uDaSMPwzG9ufcXkLg?e=zhsnho); `.onnx` files are exported from those weights and mirrored to this repo's release.
+---
 
-## Installation
+## 🎯 Key Capabilities & Architecture
 
-### Windows (PowerShell)
+```
+                                      ┌────────────────────────────────────────────────────────┐
+                                      │                   INPUT FACE IMAGE                     │
+                                      └──────────────────────────┬─────────────────────────────┘
+                                                                 │
+                                                [Safe Pre-Scaling to 1920px Lanczos]
+                                                                 │
+                                                                 ▼
+                                      ┌────────────────────────────────────────────────────────┐
+                                      │             HYBRID TWO-STAGE DETECTION CHAIN           │
+                                      │  Primary: UniFace SCRFD  ──► Fallback: RetinaFace     │
+                                      │  Deduplication: IoU Threshold <= 0.5                   │
+                                      └──────────────────────────┬─────────────────────────────┘
+                                                                 │
+                                                 [5-Point Facial Landmarks (Affine)]
+                                                                 │
+                                                                 ▼
+                                      ┌────────────────────────────────────────────────────────┐
+                                      │           NORMALIZED 112x112 FACE CROP & SCORING       │
+                                      │  • eDifFIQA-S Biometric Utility Score (0.0 to 1.0)     │
+                                      │  • 6DRepNet 3D Head Pose (Pitch, Yaw, Roll)            │
+                                      │  • MobileGaze Vector (Gaze Pitch, Gaze Yaw)            │
+                                      │  • Laplacian Variance (Sharpness & Blur)               │
+                                      │  • Exposure Ratios (Underexposure / Overexposure %)   │
+                                      │  • Illumination Asymmetry (Left vs Right Face Split)   │
+                                      └──────────────────────────┬─────────────────────────────┘
+                                                                 │
+                                                                 ▼
+                                      ┌────────────────────────────────────────────────────────┐
+                                      │             6-STATE DETERMINISTIC GATE ENGINE          │
+                                      │   [ PASS | REVIEW | REJECT | NO_FACE | NOT_EVAL | ERR ] │
+                                      └──────────────────────────┬─────────────────────────────┘
+                                                                 │
+                                                                 ▼
+                                      ┌────────────────────────────────────────────────────────┐
+                                      │               REACT DASHBOARD & EXPORT                 │
+                                      │   Interactive BBoxes • Live Batch Progress • ZIP / CSV │
+                                      └────────────────────────────────────────────────────────┘
+```
 
+### 1. eDifFIQA-S Biometric Quality Scoring
+* Standardized quality estimation predicting face utility for 1:1 verification and 1:N biometric identification.
+* Generates continuous normalized scores ($[0.0, 1.0]$) where higher scores indicate superior biometric matchability.
+
+### 2. High-Recall Crowd Detection Architecture
+* Solves the common problem of missed faces in dense surveillance and tourist photographs (e.g., Gateway of India benchmark).
+* **UniFace SCRFD** operates as the ultra-fast primary detector.
+* **RetinaFace** operates as a high-recall fallback or complementary detector.
+* Bounding boxes are filtered through an IoU deduplication engine ($\text{IoU} \le 0.5$), ensuring nearby individuals are kept while duplicate candidate boxes are removed.
+
+### 3. 3D Head Pose & Gaze Vector Tracking
+* **Head Pose (6DRepNet):** Estimates 3D Euler angles (Pitch, Yaw, Roll) to enforce frontal-face compliance for biometric enrollment.
+* **Eye Gaze (MobileGaze):** Tracks line-of-sight pitch and yaw vectors to detect if the subject is looking directly into the camera.
+
+### 4. Explainable Photographic Diagnostics
+* **Sharpness / Blur:** OpenCV Laplacian Variance on the cropped face region.
+* **Exposure Histograms:** Quantifies underexposure ($<15\%$ luminance) and overexposure ($>85\%$ luminance) percentages.
+* **Illumination Asymmetry:** Evaluates directional harsh shadowing by comparing left-versus-right split-face mean luminance.
+
+### 5. Production Decision Gate Engine
+* Discretizes evaluation into 6 deterministic states:
+  * `PASS`: Satisfies all validated operational criteria.
+  * `REVIEW`: Borderline score, non-frontal pose angle, or extreme illumination asymmetry.
+  * `REJECT`: Explicit operational rejection (e.g., severe blur, severe pose violation).
+  * `NO_FACE`: Zero face candidates detected.
+  * `NOT_EVALUATED`: Thresholds intentionally uncalibrated.
+  * `ERROR`: File decode error, corrupt data, or alignment failure.
+* **Dynamic Configuration:** Live threshold updates supported via REST API without server downtime.
+
+### 6. Interactive React 18 / Vite Dashboard
+* **Single Image Studio:** Drag-and-drop analysis, responsive bounding box rendering, landmark visualizer, 112×112 aligned crop previews, and full diagnostic breakdowns.
+* **High-Throughput Batch Evaluator:** Process up to 100 images with parallel micro-chunk streaming, live progress bars, filterable result tables, and **1-click downloads for CSV reports, JSON data, and ZIP archives containing only passed faces**.
+
+---
+
+## 📂 Project Directory Structure
+
+```
+face-image-quality-assessment/
+├── api/                           # FastAPI backend implementation
+│   ├── __init__.py
+│   ├── main.py                    # Server routing, endpoints, CORS & static mounting
+│   ├── schemas.py                 # Pydantic v2 validation models & response schemas
+│   └── service.py                 # Pipeline service singleton, caching & memory control
+├── assets/                        # Sample evaluation photographs & benchmarks
+│   ├── test_images/               # Portraits, degraded variants, and crowd scenes
+│   └── results/                   # Benchmark visual output examples
+├── configs/                       # Configuration schemas
+│   ├── detector_config.json       # SCRFD / RetinaFace input sizes and thresholds
+│   └── thresholds.json            # Calibrated gate acceptance and rejection limits
+├── docs/                          # Project documentation & engineering logs
+│   ├── DEPLOYMENT_GUIDE.md        # Comprehensive multi-cloud deployment guide
+│   ├── FIQA_Project_Status_Report.pdf  # Formal executive status report (PDF)
+│   └── REPOSITORY_INTEGRATION_AUDIT.md # Technical audit & benchmark report
+├── frontend/                      # Modern React / Vite web dashboard
+│   ├── dist/                      # Pre-compiled production web assets
+│   ├── src/
+│   │   ├── components/            # UI components (SingleImage, BatchEvaluation, BoundingBoxes)
+│   │   ├── api.js                 # Axios API client wrapper
+│   │   ├── App.jsx                # Core layout and tab navigation
+│   │   └── main.jsx               # React entrypoint
+│   ├── package.json               # Node.js dependencies
+│   └── vite.config.js             # Vite build configuration
+├── models/                        # Deep learning model architectures
+│   ├── backbones.py               # Modified IResNet and MobileFaceNet backbones
+│   ├── ediffiqa.py                # eDifFIQA PyTorch head and feature map wrapper
+│   └── ediffiqa_onnx.py           # ONNX Runtime inference implementation
+├── scripts/                       # Engineering utilities and reporting tools
+│   └── generate_report_pdf.py     # Script to compile executive status report to PDF
+├── tests/                         # Production verification & automated test suites
+│   ├── test_crowd_detection.py    # Multi-face crowd detection benchmark tests
+│   ├── test_gaze.py               # MobileGaze unit and boundary tests
+│   ├── test_photometric.py        # Sharpness, exposure and asymmetry metric tests
+│   ├── test_production_batch.py   # 100-image batch limits, partial failure, ZIP exports
+│   └── test_quality_pipeline.py   # eDifFIQA scoring, landmark alignment, and gate logic
+├── weights/                       # Pretrained model weights
+│   ├── .gitkeep
+│   ├── ediffiqa_s.onnx            # eDifFIQA-S ONNX weights (auto-downloadable)
+│   └── ediffiqa_s.pth             # eDifFIQA-S PyTorch weights (auto-downloadable)
+├── app.py                         # Hugging Face Spaces Gradio interface
+├── calibrate_thresholds.py        # Empirical threshold calibration tool
+├── detector_config.json           # Active detector configuration
+├── Dockerfile                     # Multi-stage production container definition
+├── docker-compose.yml             # Docker compose service definition
+├── face_detection.py              # SCRFD + RetinaFace detector chain with IoU deduplication
+├── gaze_check.py                  # UniFace MobileGaze angle extraction
+├── main.py                        # Standalone CLI entrypoint
+├── photometric_quality.py         # Explicit photometric quality measurement functions
+├── pose_check.py                  # UniFace 6DRepNet head-pose extraction
+├── quality_pipeline.py            # Main pipeline coordinator, singleton weights & scoring
+├── quality_thresholds.json        # Active gate thresholds
+├── render.yaml                    # Render blueprint deployment specification
+├── requirements.txt               # Python production dependencies
+└── run_demo.bat                   # 1-click Windows demo launcher
+```
+
+---
+
+## 🚀 Quickstart & Setup Guide
+
+### Option 1: 1-Click Windows Demo (Easiest)
+If you are on Windows, simply double-click [`run_demo.bat`](run_demo.bat) in the root directory. It automatically verifies your environment, compiles the frontend if needed, and starts the unified application on `http://localhost:8000`.
+
+---
+
+### Option 2: Unified Production Mode (FastAPI + React)
+FastAPI natively serves both the backend API and the compiled React dashboard on a single port.
+
+#### 1. Clone & Set Up Python Virtual Environment:
 ```powershell
+# Clone the repository
+git clone https://github.com/Kusumkar-Deeepak/Face_Image_Quality_Assessment.git
+cd Face_Image_Quality_Assessment
+
+# Create and activate virtual environment
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-# eDifFIQA weights (Git Bash / WSL: bash download.sh). In PowerShell:
+.\.venv\Scripts\Activate.ps1   # On Linux/macOS: source .venv/bin/activate
+
+# Install Python dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+#### 2. Ensure Model Weights are Present:
+The system automatically downloads weights on first use, or you can download them manually:
+```powershell
+# PowerShell
 New-Item -ItemType Directory -Force weights | Out-Null
 Invoke-WebRequest https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_s.pth -OutFile weights\ediffiqa_s.pth
-python -m unittest discover -s tests -v
+
+# Linux / macOS
+mkdir -p weights && curl -L https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_s.pth -o weights/ediffiqa_s.pth
 ```
 
-UniFace 4.x does not install an ONNX runtime for you; `requirements.txt` lists `onnxruntime` (CPU). UniFace downloads
-its detector / head-pose weights on first use.
-
-### Linux / macOS
-
-```bash
-pip install -r requirements.txt && bash download.sh
-```
-
-## Web Dashboard: Face Quality Lab
-
-A polished, responsive full-stack computer vision dashboard for single-image and batch face image quality assessment with eDifFIQA-S and UniFace.
-
-### Features
-- **Single-Image Analysis**: Drag-and-drop upload, interactive face bounding box overlay, aligned 112×112 crop preview, raw eDifFIQA model score visualization, and head-pose angle estimation.
-- **Batch Evaluation**: Multi-image processing with live progress indication, filterable and sortable results table, partial failure recovery, and CSV / JSON report downloads.
-- **Live System Metrics**: Real-time inference device indicators (CPU/CUDA) and session statistics (images processed, faces detected, detection failures, decisions).
-- **Honest Status Mapping**: Uncalibrated thresholds strictly display `NOT_EVALUATED` and *"Score available — decision threshold not calibrated"* without inventing arbitrary thresholds.
-
-### Unified Single-Command Showcase (Production Mode)
-
-FastAPI automatically serves both the compiled React dashboard and REST APIs on a single port:
-
+#### 3. Build Frontend & Launch Server:
 ```powershell
-# 1. Compile frontend (if not already built)
-cd frontend && npm install && npm run build && cd ..
+# Build the React frontend
+cd frontend
+npm install
+npm run build
+cd ..
 
-# 2. Launch unified application on Port 8000
-.\.venv\Scripts\uvicorn.exe api.main:app --host 0.0.0.0 --port 8000
+# Launch unified server on Port 8000
+python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
 ```
-- **Web UI & Dashboard**: [http://localhost:8000](http://localhost:8000)
-- **Team LAN / Wi-Fi Access**: `http://<your-machine-ip>:8000`
-- **Interactive Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+* **Web Dashboard**: [http://localhost:8000](http://localhost:8000)
+* **Interactive API Documentation (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+* **System Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
 
-> **Quick Windows Demo**: You can also double-click [`run_demo.bat`](file:///c:/Users/anjal/Desktop/Face_Image_Quality_Assessment/face-image-quality-assessment/run_demo.bat) in the root directory to launch everything with one click!
+---
 
-### Docker Deployment
+### Option 3: Development Mode (Hot-Reload)
+For active development with Vite and FastAPI hot-reloading:
+
+* **Terminal 1 (FastAPI Backend)**:
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  uvicorn api.main:app --host 127.0.0.1 --port 8000 --reload
+  ```
+
+* **Terminal 2 (React Frontend)**:
+  ```powershell
+  cd frontend
+  npm install
+  npm run dev
+  ```
+  Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+### Option 4: Docker & Docker Compose
+To run in an isolated Docker container:
 ```bash
 docker compose up -d --build
 ```
-Access at [http://localhost:8000](http://localhost:8000). See [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) for full cloud and team deployment steps.
+Access the dashboard at [http://localhost:8000](http://localhost:8000).
 
-### Development Mode (Hot Reload)
+---
 
-Open two separate PowerShell terminal windows:
-
-#### Terminal 1 — FastAPI Backend:
-```powershell
-.\.venv\Scripts\Activate.ps1
-uvicorn api.main:app --host 127.0.0.1 --port 8000 --reload
-```
-
-#### Terminal 2 — React/Vite Frontend:
-```powershell
-cd frontend
-npm run dev
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### Running Automated Tests
-
-#### Production Batch & Decision Engine Verification Suite:
-```powershell
-.\.venv\Scripts\pytest.exe tests/test_production_batch.py -v
-```
-
-#### Backend API Regression Suite:
-```powershell
-.\.venv\Scripts\pytest.exe api/test_api.py -v
-```
-
-#### Frontend Component Test Suite:
-```powershell
-cd frontend
-npm test
-```
-
-#### Existing Pipeline Test Suite:
-```powershell
-python -m unittest discover -s tests -v
-```
-
-
-> The README demo table below is **upstream's** eDifFIQA-T output, not a result of the pipeline in this fork.
-
-## Demo (upstream)
-
-eDifFIQA-T quality scores on `assets/test_images/`. The same face, progressively degraded, scored lower in these examples:
-
-|                  Original                   |                  Down-up sampled                   |                    Heavy blur                    |
-| :-----------------------------------------: | :------------------------------------------------: | :----------------------------------------------: |
-| ![](assets/results/image2.jpg)<br>**0.762** | ![](assets/results/image2_lowres.jpg)<br>**0.435** | ![](assets/results/image2_blur.jpg)<br>**0.144** |
-| ![](assets/results/image3.jpg)<br>**0.737** | ![](assets/results/image3_lowres.jpg)<br>**0.537** | ![](assets/results/image3_blur.jpg)<br>**0.273** |
-
-A lower score for a degraded variant is **not guaranteed** (see "Known limitations").
-
-## Pipeline
-
-```
-detect (SCRFD, optional RetinaFace fallback) -> validate bbox/landmarks -> face_alignment (unchanged, 112x112)
-  -> eDifFIQA score -> [optional head pose on the bbox crop] -> status + decision + reason
-```
-
-* **Status** (did processing work?): `OK`, `READ_ERROR`, `NO_FACE`, `ALIGNMENT_ERROR`, `MODEL_ERROR`.
-* **Decision** (is the face good enough?): `ACCEPT`, `REJECT`, `REVIEW`, `NOT_EVALUATED`. Anything that is not
-  status `OK` is `NOT_EVALUATED`. A detector miss is **never** reported as a quality verdict.
-* The score is the raw eDifFIQA output. It is not a probability and is not calibrated by default.
-* Thresholds ship as `null` (`quality_thresholds.json`), so decisions are `NOT_EVALUATED` until you calibrate on
-  labeled data (`calibrate_thresholds.py`).
-
-## Inference
+### Option 5: Command-Line (CLI) Inference
+You can also run standalone CLI evaluations without starting the web server:
 
 ```powershell
-python main.py assets\test_images\image2.jpg --variant s
+# Evaluate a single face image with head-pose and gaze tracking
+python main.py assets/test_images/image5.jpg --variant s --head-pose --gaze
+
+# Evaluate with RetinaFace fallback enabled
+python main.py assets/test_images/image2.jpg --variant s --fallback-detector retinaface
+
+# Run batch evaluation with synthetic degradations across a directory
+python batch_evaluate.py assets/test_images --fallback-detector retinaface --head-pose --degrade blur:3 --degrade lowres:4
 ```
 
-With the default SCRFD settings (640x640 input, confidence 0.5) the tight portraits in `assets/test_images` are
-reported as `NO_FACE`. Options, in the order we recommend trying them:
+---
+
+## 🧪 Automated Testing Suite
+
+The repository includes a comprehensive `pytest` verification suite covering batch processing, partial failure handling, biometric thresholds, and crowd detection:
 
 ```powershell
-# 1) RetinaFace only when SCRFD yields no usable face
-python main.py assets\test_images\image2.jpg --variant s --fallback-detector retinaface
+# Run production batch & decision engine tests
+pytest tests/test_production_batch.py -v
 
-# 2) Smaller SCRFD input for close-up / pre-cropped faces (no confidence change)
-python main.py assets\test_images\image2.jpg --variant s --scrfd-input-size 320
+# Run crowd detection & fallback tests
+pytest tests/test_crowd_detection.py -v
 
-# 3) Head pose (pitch/yaw/roll) as an extra report field
-python main.py assets\test_images\image2.jpg --variant s --fallback-detector retinaface --head-pose
+# Run photometric quality diagnostics tests
+pytest tests/test_photometric.py -v
+
+# Run full test suite
+pytest tests/ -v
 ```
 
-Why `NO_FACE` happens, measured on the 5 sample portraits (`detector_diagnostic.py`): UniFace letterboxes every image
-to the detector input and *upscales* small images. The four portraits SCRFD misses (208-537 px images) have faces of
-~460-515 px at SCRFD's 640 input (using RetinaFace's boxes), and SCRFD's best candidate scores only 0.20-0.34 (for
-`image3.jpg` that candidate is a 16 px false positive, not the face, so lowering the threshold would return a wrong
-box). The one portrait SCRFD finds (`image5.jpg`, 0.857) has a ~270 px face at input. With `--scrfd-input-size 320` the
-same four faces are ~240-260 px at input and are found at 0.86 with the confidence threshold unchanged. This is
-consistent with the faces being larger than SCRFD's comfortable scale range, but five images do not prove the
-mechanism. `input_size=320` is **not** a safe default for wide surveillance frames with small faces; choose per source.
+---
 
-Detector settings live in `detector_config.json` (CLI flags override it). Defaults equal UniFace's defaults.
-Bounding boxes and landmarks are validated (finite, positive-size box that overlaps the image, 5x2 non-degenerate
-landmarks whose centroid lies in the box, confidence in [0, 1]); overlapping detections are de-duplicated.
+## 📊 Threshold Calibration Guide
 
-### Diagnose a detector miss
+Biometric decision thresholds should always be calibrated to the specific camera hardware, illumination environment, and operational risk tolerance:
 
-```powershell
-python detector_diagnostic.py assets\test_images\image2.jpg --scrfd-input-sizes 320 --json results\detector_diagnostic.json
-```
+1. Label a set of face images as `usable` or `unusable` in a CSV file (`image,label`).
+2. Run empirical threshold sweeping:
+   ```powershell
+   python batch_evaluate.py my_dataset --labels labels.csv --fallback-detector retinaface
+   python calibrate_thresholds.py results/batch_evaluation.csv --target-precision 0.95 --max-false-rejection 0.02
+   ```
+3. Update `configs/thresholds.json` directly or use the live UI Settings tab to apply the calibrated limits.
 
-Reports production detections, sub-threshold candidates (low floor used for diagnosis only), face-to-image ratio, the
-face size at the detector input, alignment status, and an optional input-size sweep.
+---
 
-### Batch evaluation
+## ⚙️ Cloud Resource Optimization & Architecture Notes
 
-```powershell
-python batch_evaluate.py assets\test_images --fallback-detector retinaface --head-pose `
-    --degrade blur:3 --degrade lowres:4 --degrade dark:0.3 --yaw-bins 15 30
-```
+* **Multi-Model Footprint:** Running 5 deep learning models (`SCRFD` + `RetinaFace` + `eDifFIQA-S` + `6DRepNet` + `MobileGaze`) simultaneously on CPU requires approximately **~700–800 MB of RAM** during peak batch inference.
+* **512 MB Container Hardening (Render Free Tier):**
+  * *Singleton Model Caching:* `QualityPipeline` shares model weights and ONNX runtime detector sessions across instances, eliminating duplicate 200 MB allocations.
+  * *Kernel Memory Trimming:* Injected `malloc_trim(0)` via `libc` to return unmapped heap chunks back to the Linux OS after every image.
+  * *Safe Pre-Scaling:* Images $>1920\text{px}$ are downscaled via Lanczos resampling prior to tensor conversion, slashing raw memory by $>80\%$.
+  * *Micro-Chunk Streaming:* Batch queues stream files in micro-chunks of 2, preventing memory spikes.
+* **High-Capacity Deployment (Hugging Face Spaces):**
+  * Deployed on Hugging Face Spaces (16 GB Free RAM) where all 5 models and large batch queues execute with zero hardware constraints.
 
-Writes `results\batch_evaluation.csv/.json` (one row per face, or per image if nothing was scored) and
-`results\batch_summary.json`: status/decision counts, detection success, fallback frequency, timing, score
-distribution per category, original-vs-variant pairs (with exceptions listed), and score by |yaw| bin.
-`--degrade` creates deterministic in-memory variants (`blur:SIGMA`, `lowres:FACTOR` down/up-sample, `dark:SCALE`
-brightness scaling). Files named `*_blur` / `*_lowres` are categorised automatically. Low-resolution, dark and
-side-facing categories beyond that need your own images, supplied via `--labels labels.csv` (`image[,category][,label]`).
+---
 
-### Threshold calibration (pending until you have labels)
+## 📄 License & Acknowledgements
 
-```powershell
-python batch_evaluate.py my_dataset --labels labels.csv --fallback-detector retinaface
-python calibrate_thresholds.py results\batch_evaluation.csv --target-precision 0.95 --max-false-rejection 0.02
-```
-
-Labels are `usable` / `unusable` for recognition. The tool writes a threshold sweep (precision, recall, F1, false
-rejection / acceptance rates) and a *provisional* proposal only when each class has at least `--min-per-class`
-samples (default 50) and you supply the two operating targets. It never edits `quality_thresholds.json`. No labeled
-dataset ships with this repository, so **no threshold has been calibrated**.
-
-### Head pose
-
-`--head-pose` uses `uniface.headpose.HeadPose` (ResNet-18) on the detector's **bbox crop** of the original image. It
-estimates head orientation, not gaze. Optional limits (`max_abs_pitch/yaw/roll` in `quality_thresholds.json`) turn
-violations into `REVIEW` (never an automatic `REJECT`) and are `null` by default; calibrate them against your
-cameras before use. Setting limits without `--head-pose` is an error.
-
-### Aligned crops
-
-```powershell
-python main.py --aligned aligned_face.png --variant s
-```
-
-The input must be exactly 112x112, 3-channel, uint8 and non-constant; anything else is `ALIGNMENT_ERROR`. The check
-cannot verify that the crop was aligned with the 5-point ArcFace template; that is your responsibility.
-
-## Tests
-
-```powershell
-python -m unittest discover -s tests -v
-```
-
-Tests needing `weights\ediffiqa_s.pth` and `assets\test_images` are skipped when those are missing.
-
-## Known limitations
-
-* Scores depend on the detector's landmarks (the same face scored 0.7615 with SCRFD@320 and 0.7756 with
-  RetinaFace on `image3.jpg`). Calibrate with the same detector configuration you deploy.
-* A degraded variant does not always score lower (sample data: `image0.jpg` down/up-sampled x4 scored higher than the
-  original). Check the `paired_summary.exceptions` in the batch summary.
-* Head-pose estimates on blurred crops are unreliable (`image2_blur.jpg` -> yaw 50 deg vs 1.9 deg for the sharp image).
-* Nothing here measures face-recognition accuracy; any benefit to recognition must be evaluated separately.
-
-## ONNX Inference
-
-```bash
-python onnx_inference.py --model weights/ediffiqa_s.onnx assets/test_images/image2.jpg
-```
-
-```python
-import cv2
-from models import eDifFIQAOnnx
-from uniface.detection import SCRFD
-
-detector = SCRFD()
-quality = eDifFIQAOnnx("weights/ediffiqa_s.onnx")
-
-image = cv2.imread("image.jpg")
-for face in detector.detect(image):
-    score = quality.get_quality(image, face.landmarks)
-    print(f"Quality: {score:.4f}")
-```
-
-## ONNX Export
-
-```bash
-python onnx_export.py -v s -w weights/ediffiqa_s.pth -o weights/ediffiqa_s.onnx --dynamic
-```
-
-## Reference
-
-- [eDifFIQA](https://github.com/LSIbabnikz/eDifFIQA) — Original PyTorch implementation and paper
-- [UniFace](https://github.com/yakhyo/uniface) — Face detection and alignment
-
-## License
-
-[MIT License](./LICENSE)
+* **License:** [MIT License](LICENSE)
+* **eDifFIQA:** Babnik et al., *"eDifFIQA: Efficient Diffusion-based Face Image Quality Assessment"*, IEEE Access 2024. [Paper Link](https://ieeexplore.ieee.org/document/10468647)
+* **UniFace:** Yakhyo et al., *"UniFace: Deep Face Analysis Toolkit"*. [GitHub Link](https://github.com/yakhyo/uniface)

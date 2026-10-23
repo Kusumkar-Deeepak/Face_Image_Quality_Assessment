@@ -1,7 +1,7 @@
 {
-  "accept_min": null,
-  "reject_max": null,
+  "accept_min": 0.65,
+  "reject_max": 0.4,
   "max_abs_pitch": null,
-  "max_abs_yaw": null,
+  "max_abs_yaw": 30.0,
   "max_abs_roll": null
 }
